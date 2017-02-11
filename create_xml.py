@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import copy
+from payer_data import getPayerDataForFields
 
 def getWrapperTemplate():
 	tree = ET.parse("wrapper.xml")
@@ -18,11 +19,13 @@ def getItemsRoots(items):
 def getItemRootWithData(itemData):
 	itemRoot = getItemTemplate().getroot()
 	for column, value in itemData.items():
-		fillInItemWithData(itemRoot, column, value)
+		fillInItemWithManData(itemRoot, column, value)
+	fillInItemWithPayerData(itemRoot)
+	fillInItemTitle(itemRoot, itemData.get("B"))
 	return itemRoot
 
 
-def fillInItemWithData(rootToFillIn, column, value):
+def fillInItemWithManData(rootToFillIn, column, value):
 	elementName = getRootElementNameBasedOnColumnName(column)
 	
 	if elementName != None:
@@ -30,6 +33,19 @@ def fillInItemWithData(rootToFillIn, column, value):
 
 	return rootToFillIn;
 
+
+def fillInItemWithPayerData(rootToFillIn):
+	payerData = getPayerDataForFields()
+	rootWithPayerData = rootToFillIn.find("forms").find("item")
+	for fieldName, value in payerData.items():
+		rootWithPayerData.find(fieldName).text = value
+	return rootToFillIn
+
+
+def fillInItemTitle(itemRoot, itemTitle):
+	itemRoot.find("title").text = itemTitle
+	return itemRoot
+	
 
 def getRootElementNameBasedOnColumnName(column):
 	columnToElementName = {
@@ -54,8 +70,6 @@ def getRootElementNameBasedOnColumnName(column):
 
 def appendItems(wrapperRoot, itemsRoots):
 	for item in itemsRoots:
-		#print(type(item))
-		#print(item.text)
 		wrapperRoot.find("Profiles").find("item").find("FormsList").append(item)
 
 
