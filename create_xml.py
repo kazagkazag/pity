@@ -22,6 +22,7 @@ def getItemRootWithData(itemData):
 		fillInItemWithManData(itemRoot, column, value)
 	fillInItemWithPayerData(itemRoot)
 	fillInItemTitle(itemRoot, itemData.get("B"))
+	fillInItemID(itemRoot, itemData.get("B"))
 	return itemRoot
 
 
@@ -45,7 +46,12 @@ def fillInItemWithPayerData(rootToFillIn):
 def fillInItemTitle(itemRoot, itemTitle):
 	itemRoot.find("title").text = itemTitle
 	return itemRoot
-	
+
+
+def fillInItemID(itemRoot, itemID):
+	itemRoot.find("id").text = itemID + "_8C"
+	return itemRoot
+
 
 def getRootElementNameBasedOnColumnName(column):
 	columnToElementName = {
